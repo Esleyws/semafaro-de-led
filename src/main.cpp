@@ -1,70 +1,51 @@
 #include <Arduino.h>
 
-const int LED_VERMELHO = 4;
-const int LED_AMARELO = 5;
-const int LED_VERDE = 18;
+const int LED[3] = {4, 5, 18};
 int tempo;
-int etapa = 0;
+enum Etapa { VERMELHO, AMARELO_SUBINDO, VERDE, AMARELO_DESCENDO };
+Etapa etapa = VERMELHO;
 
 void setup()
 {
-  Serial.begin(115200);
+  pinMode(LED[0], OUTPUT);
+  pinMode(LED[1], OUTPUT);
+  pinMode(LED[2], OUTPUT);
 
-  pinMode(LED_VERMELHO, OUTPUT);
-  pinMode(LED_AMARELO, OUTPUT);
-  pinMode(LED_VERDE, OUTPUT);
-
-  digitalWrite(LED_VERMELHO, HIGH);
-  digitalWrite(LED_AMARELO, LOW);
-  digitalWrite(LED_VERDE, LOW);
+  digitalWrite(LED[0], HIGH);
+  digitalWrite(LED[1], LOW);
+  digitalWrite(LED[2], LOW);
 }
 
 void loop()
 {
-  if (etapa == 0)
+  switch (etapa)
   {
-    digitalWrite(LED_VERMELHO, LOW);
-    digitalWrite(LED_AMARELO, HIGH);
-    digitalWrite(LED_VERDE, LOW);
-
-    Serial.println("LED Amarelo Ligado");
-
-    delay(tempo = 2000);
+    case VERMELHO:
+      tempo = 5000;
+      digitalWrite(LED[0], HIGH);
+      digitalWrite(LED[1], LOW);
+      digitalWrite(LED[2], LOW);
+      break;
+    case AMARELO_SUBINDO:
+      tempo = 2000;
+      digitalWrite(LED[0], LOW);
+      digitalWrite(LED[1], HIGH);
+      digitalWrite(LED[2], LOW);
+      break;
+    case VERDE:
+      tempo = 5000;
+      digitalWrite(LED[0], LOW);
+      digitalWrite(LED[1], LOW);
+      digitalWrite(LED[2], HIGH);
+      break;
+    case AMARELO_DESCENDO:
+      tempo = 2000;
+      digitalWrite(LED[0], LOW);
+      digitalWrite(LED[1], HIGH);
+      digitalWrite(LED[2], LOW);
+      break;
   }
-  else if (etapa == 1)
-  {
-    digitalWrite(LED_VERMELHO, LOW);
-    digitalWrite(LED_AMARELO, LOW);
-    digitalWrite(LED_VERDE, HIGH);
-
-    Serial.println("LED Verde Ligado");
-
-    delay(tempo = 5000);
-  }
-  else if (etapa == 2)
-  {
-    digitalWrite(LED_VERMELHO, LOW);
-    digitalWrite(LED_AMARELO, HIGH);
-    digitalWrite(LED_VERDE, LOW);
-
-    Serial.println("LED Amarelo Ligado");
-
-    delay(tempo = 2000);
-  }
-  else if (etapa == 3)
-  {
-    digitalWrite(LED_VERMELHO, HIGH);
-    digitalWrite(LED_AMARELO, LOW);
-    digitalWrite(LED_VERDE, LOW);
-
-    Serial.println("LED Vermelho Ligado");
-
-    delay(tempo = 5000);
-  }
-
-  etapa++;
-  if (etapa > 3)
-  {
-    etapa = 0;
-  }
+  
+  delay(tempo);
+  etapa = (Etapa)((etapa + 1) % 4);
 }
