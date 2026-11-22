@@ -1,19 +1,38 @@
 #include <Arduino.h>
 
-const int LED[3] = {4, 5, 18};
-int tempo;
+struct Led
+{
+  int pino;
+  int tempo;
+};
+
+Led leds[3] = {
+  {4, 5000}, // Vermelho
+  {5, 2000}, // Amarelo
+  {18, 5000}  // Verde
+};
+
 enum Etapa { VERMELHO, AMARELO_SUBINDO, VERDE, AMARELO_DESCENDO };
 Etapa etapa = VERMELHO;
 
+void acender(int indice)
+{
+  for (int i = 0; i < 3; i++)
+  {
+    digitalWrite(leds[i].pino, LOW);
+  }
+
+  digitalWrite(leds[indice].pino, HIGH);
+}
+
 void setup()
 {
-  pinMode(LED[0], OUTPUT);
-  pinMode(LED[1], OUTPUT);
-  pinMode(LED[2], OUTPUT);
+  for (int i = 0; i < 3; i++)
+  {
+    pinMode(leds[i].pino, OUTPUT);
+  }
 
-  digitalWrite(LED[0], HIGH);
-  digitalWrite(LED[1], LOW);
-  digitalWrite(LED[2], LOW);
+  acender(0);
 }
 
 void loop()
@@ -21,31 +40,23 @@ void loop()
   switch (etapa)
   {
     case VERMELHO:
-      tempo = 5000;
-      digitalWrite(LED[0], HIGH);
-      digitalWrite(LED[1], LOW);
-      digitalWrite(LED[2], LOW);
+      acender(0);
+      delay(leds[0].tempo);
       break;
     case AMARELO_SUBINDO:
-      tempo = 2000;
-      digitalWrite(LED[0], LOW);
-      digitalWrite(LED[1], HIGH);
-      digitalWrite(LED[2], LOW);
+      acender(1);
+      delay(leds[1].tempo);
       break;
     case VERDE:
-      tempo = 5000;
-      digitalWrite(LED[0], LOW);
-      digitalWrite(LED[1], LOW);
-      digitalWrite(LED[2], HIGH);
+      acender(2);
+      delay(leds[2].tempo);
       break;
     case AMARELO_DESCENDO:
-      tempo = 2000;
-      digitalWrite(LED[0], LOW);
-      digitalWrite(LED[1], HIGH);
-      digitalWrite(LED[2], LOW);
+      acender(1);
+      delay(leds[1].tempo);
       break;
   }
-  
-  delay(tempo);
+
+  delay(100);
   etapa = (Etapa)((etapa + 1) % 4);
 }
